@@ -1,4 +1,4 @@
-package com.kontaxakis.ticket_api.model;
+package com.kontaxakis.ticket_api.entity;
 
 public enum OrderStatus {
     PENDING,
