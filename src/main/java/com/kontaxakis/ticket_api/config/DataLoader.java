@@ -42,8 +42,8 @@ public class DataLoader implements CommandLineRunner {
             event.setTitle("Test Concert");
             event.setDescription("Test Description");
             event.setEventDate(Instant.now().plus(java.time.Duration.ofDays(10)));
-            event.setTotalTickets(100);
-            event.setAvailableTickets(100);
+            event.setTotalTickets(1000);
+            event.setAvailableTickets(1000);
             event.setPrice(BigDecimal.valueOf(50.00));
             event.setStatus(EventStatus.ACTIVE);
             eventRepository.save(event);

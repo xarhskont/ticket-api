@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.http.ResponseEntity;
 
 import com.kontaxakis.ticket_api.service.RedisStockService;
 import com.kontaxakis.ticket_api.service.RabbitMQProducer;
@@ -41,11 +42,11 @@ public class TicketController {
      * It only checks the cache and immediately pushes the order to RabbitMQ.
      */
     @PostMapping("/buy")
-    public String buyTicket(@Valid @RequestBody BuyTicketRequest request) {
+    public ResponseEntity<String> buyTicket(@Valid @RequestBody BuyTicketRequest request) {
         long startTime = System.currentTimeMillis();
         boolean isReserved = redisStockService.reserveTickets(request.eventId(), request.quantity());
         if (!isReserved) {
-            return "Sold out. Order failed.";
+            return ResponseEntity.badRequest().body("Sold out. Order failed.");
         }
 
         User user = new User();
@@ -67,12 +68,13 @@ public class TicketController {
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
 
-        return "Order accepted and is processing. Processed in " + duration + "ms";
+        return ResponseEntity.ok("Order accepted and is processing. Processed in " + duration + "ms");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public String handleValidationExceptions() {
-        return "Order failed. Reason: The valid number of tickets is between 1 and 10.";
+    public ResponseEntity<String> handleValidationExceptions() {
+        return ResponseEntity.badRequest()
+                .body("Order failed. Reason: The valid number of tickets is between 1 and 10.");
     }
 
 }
