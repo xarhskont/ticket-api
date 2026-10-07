@@ -7,9 +7,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import com.kontaxakis.ticket_api.service.RedisStockService;
 import com.kontaxakis.ticket_api.service.RabbitMQProducer;
+import com.kontaxakis.ticket_api.repository.EventRepository;
 
 import com.kontaxakis.ticket_api.entity.Order;
 import com.kontaxakis.ticket_api.entity.OrderStatus;
@@ -18,6 +20,7 @@ import com.kontaxakis.ticket_api.entity.Event;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -36,6 +39,7 @@ public class TicketController {
 
     private final RedisStockService redisStockService;
     private final RabbitMQProducer rabbitMQProducer;
+    private final EventRepository eventRepository;
 
     /**
      * To handle flash sale traffic the method never touches the database.
@@ -69,6 +73,13 @@ public class TicketController {
         long duration = endTime - startTime;
 
         return ResponseEntity.ok("Order accepted and is processing. Processed in " + duration + "ms");
+    }
+
+    @GetMapping("/events")
+    public ResponseEntity<List<String>> getAllEvents() {
+        List<Event> events = eventRepository.findAll();
+        List<String> titles = events.stream().map(Event::getTitle).toList();
+        return ResponseEntity.ok(titles);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
