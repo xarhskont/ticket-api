@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.kontaxakis.ticket_api.service.RabbitMQProducer;
 import com.kontaxakis.ticket_api.service.RedisStockService;
+import com.kontaxakis.ticket_api.repository.EventRepository;
 
 @WebMvcTest(TicketController.class)
 public class TicketControllerTest {
@@ -30,6 +31,9 @@ public class TicketControllerTest {
 
     @MockitoBean
     private RabbitMQProducer rabbitMQProducer;
+
+    @MockitoBean
+    private EventRepository eventRepository;
 
     @Test
     void testBuyTicket_Success() throws Exception {
